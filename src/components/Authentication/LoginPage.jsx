@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { email } from "./../../../node_modules/zod/v4/classic/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getUser, login } from "../../services/userServices";
+import { Navigate, useLocation } from "react-router-dom";
 
 const schema = z.object({
   email: z
@@ -16,13 +18,28 @@ const schema = z.object({
 });
 
 const LoginPage = () => {
+  const location = useLocation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
+  const [formError, setFormError] = useState(null);
+  const onSubmit = async (formData) => {
+    try {
+      await login(formData);
+      window.location = location.state ? location.state.from : "/";
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        console.log(error.response);
+        setFormError(error.response.data.message);
+      }
+    }
+  };
 
-  const onSubmit = (formData) => console.log(formData);
+  if (getUser()) {
+    return <Navigate to="/"></Navigate>;
+  }
 
   return (
     <section className="align_center form_page">
@@ -55,6 +72,7 @@ const LoginPage = () => {
               <em className="form_error">{errors.password.message}</em>
             )}
           </div>
+          {formError && <em className="form_error">{formError}</em>}
           <button className="search_button form_submit">Submit</button>
         </div>
       </form>

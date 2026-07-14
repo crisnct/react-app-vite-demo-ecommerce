@@ -1,0 +1,9 @@
+@host = http://localhost:5000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2YTUwOWFhZWE3ZTM0ZjE4MjljMTRkZWEiLCJuYW1lIjoiQ3Jpc3RpYW4gVG9uZSIsImVtYWlsIjoibmVsdWNyaXN0aWFuMjAwNUBnbWFpbC5jb20iLCJwcm9maWxlUGljIjoicHJvZmlsZVBpYy0xNzgzNjY3Mzc0OTI0LmpwZWciLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzgzOTI3Mzc1LCJleHAiOjE3ODM5MzA5NzV9.b58ryNjhq1OWCWjGhY9PRvtFRGunFAubP50G2Mum4fA
+
+###
+
+GET {{host}}/api/cart
+Content-Type: application/json
+x-auth-token: {{token}}
+

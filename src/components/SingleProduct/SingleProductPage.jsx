@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./SingleProductPage.css";
 import QuantityInput from "./QuantityInput";
 import { useParams } from "react-router-dom";
 import useData from "./../../hooks/useData";
 import ApiClient from "../../utils/apiClient";
 import Loader from "../Common/Loader";
+import CartContext from "../../context/CartContext";
+import UserContext from "../../context/UserContext";
 
 const SingleProductPage = () => {
   const { id } = useParams();
   const { data, error, loading } = useData("/products/" + id, null, false, []);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useContext(CartContext);
+  const user = useContext(UserContext);
 
   return (
     <>
@@ -41,15 +45,25 @@ const SingleProductPage = () => {
             <h1 className="single_product_title">{data?.title}</h1>
             <p className="single_product_description">{data?.description}</p>
             <p className="single_product_price">${data?.price.toFixed(2)}</p>
-            <h2 className="quantity_title">Quantity:</h2>
-            <div className="align_center quantity_input">
-              <QuantityInput
-                quantity={quantity}
-                stock={data?.stock}
-                setQuantity={(q) => setQuantity(q)}
-              />
-            </div>
-            <button className="search_button add_cart">Add to Cart</button>
+            {user && (
+              <>
+                <h2 className="quantity_title">Quantity:</h2>
+                <div className="align_center quantity_input">
+                  <QuantityInput
+                    quantity={quantity}
+                    stock={data?.stock}
+                    setQuantity={setQuantity}
+                  />
+                </div>
+
+                <button
+                  className="search_button add_cart"
+                  onClick={() => addToCart(data, quantity)}
+                >
+                  Add to Cart
+                </button>
+              </>
+            )}
           </div>
         </section>
       )}

@@ -1,0 +1,29 @@
+@host = http://localhost:5000
+
+###
+
+POST {{host}}/api/user/signup
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+Test User
+--MyBoundary
+Content-Disposition: form-data; name="email"
+
+demoecommerce3@gmail.com
+--MyBoundary
+Content-Disposition: form-data; name="password"
+
+12345678
+--MyBoundary
+Content-Disposition: form-data; name="deliveryAddress"
+
+my delivery address
+--MyBoundary
+Content-Disposition: form-data; name="profilePic"; filename="Cristian Tone.jpeg"
+Content-Type: image/jpeg
+
+< C:\Data\Cristian Tone.jpeg
+--MyBoundary--
