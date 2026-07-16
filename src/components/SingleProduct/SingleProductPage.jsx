@@ -10,7 +10,12 @@ import UserContext from "../../context/UserContext";
 
 const SingleProductPage = () => {
   const { id } = useParams();
-  const { data, error, loading } = useData("/products/" + id, null, false, []);
+  const { data, error, isLoading } = useData(
+    "/products/" + id,
+    null,
+    ["products", id],
+    7000,
+  );
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useContext(CartContext);
@@ -18,8 +23,8 @@ const SingleProductPage = () => {
 
   return (
     <>
-      {loading && <Loader></Loader>}
-      {error && <em className="form_error">{error}</em>}
+      {isLoading && <Loader></Loader>}
+      {error && <em className="form_error">{error.message}</em>}
       {!error && (
         <section className="align_center single_product">
           <div className="align_center">

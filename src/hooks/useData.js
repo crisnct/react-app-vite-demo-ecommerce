@@ -1,47 +1,26 @@
 import React, { useEffect, useState } from "react";
 import ApiClient from "../utils/apiClient";
+import { useQuery } from "@tanstack/react-query";
 
-const useData = (endpoint, customConfig, persistData, dependencies) => {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const response = await ApiClient.get(endpoint, customConfig);
-      const effectivePage = Number(
-        customConfig?.params?.page ?? customConfig?.params?.pageInfinite ?? 1,
-      );
-      const willAppend =
-        persistData &&
-        data !== null &&
-        endpoint === "/products" &&
-        response &&
-        response.data &&
-        response.data.products &&
-        effectivePage > 1;
-      if (willAppend) {
-        setData((prev) => ({
-          ...prev,
-          products: [...prev.products, ...response.data.products],
-        }));
-      } else {
-        setData(response.data);
-      }
-    } catch (error) {
-      console.log("Error at retrieving data from server " + error);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(
-    () => {
-      loadData();
-    },
-    dependencies ? dependencies : [],
-  );
-  return { data, error, loading };
+const useData = (
+  endpoint,
+  customConfig = {},
+  queryKey,
+  staleTime = 300_000,
+) => {
+  const fetchFunction = () =>
+    ApiClient.get(endpoint, customConfig).then((resp) => resp.data);
+
+  return useQuery({
+    queryKey: queryKey,
+    queryFn: fetchFunction,
+    retry: 7,
+    retryDelay: 3000,
+    staleTime: staleTime, //how much time data live in cache
+    refetchOnReconnect: true, //refetch stale data when the internet connection is up again
+    refetchOnWindowFocus: false, //refetch stale data when the user switch back to browser tab of the app
+    refetchInterval: 60_000, // fetch automatically data every 60 sec
+  });
 };
 
 export default useData;

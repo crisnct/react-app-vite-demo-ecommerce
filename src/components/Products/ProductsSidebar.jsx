@@ -3,14 +3,20 @@ import "./ProductsSidebar.css";
 import LinkWithIcon from "../Navbar/LinkWithIcon";
 import ApiClient from "../../utils/apiClient";
 import useData from "../../hooks/useData";
+import Loader from "../Common/Loader";
 
 const ProductsSidebar = () => {
-  const { data: categories, error } = useData("/category");
+  const {
+    data: categories,
+    error,
+    isLoading,
+  } = useData("/category", null, ["category"], 10 * 60 * 60 * 1000);
   return (
     <aside className="products_sidebar">
       <h2>Category</h2>
       <div className="category_links">
-        {error && <em className="form_error">{error}</em>}
+        {isLoading && <Loader></Loader>}
+        {error && <em className="form_error">{error.message}</em>}
         {categories &&
           categories.map((category) => (
             <LinkWithIcon

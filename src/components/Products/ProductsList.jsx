@@ -5,6 +5,7 @@ import useData from "../../hooks/useData";
 import ProductCardSkeleton from "./ProductCardSkeleton";
 import { useSearchParams } from "react-router-dom";
 import Pagination from "./../Common/Pagination";
+import useProductList from "./../../hooks/useProductList";
 
 const postsPerPage = 8;
 const usePagination = false;
@@ -14,38 +15,14 @@ const ProductsList = () => {
   const [search, setSearch] = useSearchParams();
   const category = search.get("category");
   const searchQuery = search.get("search");
-  const page = search.get("page") || "1";
   const [sortBy, setSortBy] = useState("");
   const [sortedProducts, setSortedProducts] = useState([]);
-  const [pageInfinite, setPageInfinite] = useState(1);
-  const { data, error, loading } = usePagination
-    ? useData(
-        "/products",
-        {
-          params: {
-            search: searchQuery,
-            category,
-            page,
-            perPage: postsPerPage,
-          },
-        },
-        useInfiniteScroll,
-        [searchQuery, category, page],
-      )
-    : useData(
-        "/products",
-        {
-          params: {
-            search: searchQuery,
-            category,
-            page: pageInfinite,
-            perPage: postsPerPage,
-          },
-        },
-        useInfiniteScroll,
-        [searchQuery, category, pageInfinite],
-      );
-
+  const { data, error, fetchNextPage, isFetching, hasNextPage } =
+    useProductList({
+      search: searchQuery,
+      category,
+      perPage: postsPerPage,
+    });
   const handlePageChangePagination = (selectedPage) => {
     const currentParams = Object.fromEntries([...search]);
     setSearch({ ...currentParams, page: String(selectedPage) });
@@ -62,23 +39,17 @@ const ProductsList = () => {
           ? data.products.length >= data.totalProducts
           : false;
 
-      if (reachedBottom && !loading && !noMoreData) {
-        setPageInfinite((prevPage) => prevPage + 1);
+      if (reachedBottom && !isFetching && hasNextPage) {
+        fetchNextPage();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [searchQuery, loading, data]);
-
-  if (useInfiniteScroll) {
-    useEffect(() => {
-      setPageInfinite(1);
-    }, [searchQuery, category]);
-  }
+  }, [searchQuery, isFetching, data]);
 
   useEffect(() => {
-    if (data && data.products) {
-      const products = [...data.products];
+    if (data && data.pages) {
+      const products = data.pages.flatMap((page) => page.products);
       if (sortBy === "price desc") {
         setSortedProducts(products.sort((a, b) => b.price - a.price));
       } else if (sortBy === "price asc") {
@@ -115,16 +86,13 @@ const ProductsList = () => {
         </select>
       </header>
       <div key="products_list" className="products_list">
-        {error && <em className="form_error">{error}</em>}
-        {loading
+        {error && <em className="form_error">{error.message}</em>}
+        {isFetching
           ? Array.from({ length: postsPerPage }).map((__, index) => (
               <ProductCardSkeleton key={index}></ProductCardSkeleton>
             ))
           : sortedProducts.map((product) => (
-              <ProductCard
-                key={page * 1000 + 100 * pageInfinite + product._id}
-                product={product}
-              ></ProductCard>
+              <ProductCard key={product._id} product={product}></ProductCard>
             ))}
 
         {data && usePagination && (
