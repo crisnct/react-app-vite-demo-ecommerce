@@ -10,7 +10,7 @@ const ProductsSidebar = () => {
     data: categories,
     error,
     isLoading,
-  } = useData("/category", null, ["category"], 10 * 60 * 60 * 1000);
+  } = useData("/category", null, ["category"], 10 * 60 * 60 * 1000, true);
   return (
     <aside className="products_sidebar">
       <h2>Category</h2>

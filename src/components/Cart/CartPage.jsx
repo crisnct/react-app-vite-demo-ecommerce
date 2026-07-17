@@ -3,7 +3,6 @@ import "./CartPage.css";
 import remove from "../../assets/remove.png";
 import Table from "../Common/Table";
 import QuantityInput from "../SingleProduct/QuantityInput";
-import { getCartAPI } from "../../services/cartServices";
 import { toast } from "react-toastify";
 import UserContext from "../../context/UserContext";
 import apiClient from "../../utils/apiClient";

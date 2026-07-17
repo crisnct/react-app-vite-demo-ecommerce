@@ -15,6 +15,7 @@ const SingleProductPage = () => {
     null,
     ["products", id],
     7000,
+    true,
   );
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);

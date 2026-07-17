@@ -5,24 +5,34 @@ import Routing from "./components/Routing/Routing";
 import { jwtDecode } from "jwt-decode";
 import { getToken, getUser, logout } from "./services/userServices";
 import setAuthToken from "./utils/setAuthToken";
-import {
-  addToCartAPI,
-  decreaseProductAPI,
-  getCartAPI,
-  increaseProductAPI,
-  removeFromCartAPI,
-} from "./services/cartServices";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import UserContext from "./context/UserContext";
 import CartContext from "./context/CartContext";
 import { useCallback } from "react";
+import useData from "./hooks/useData";
+import useAddToCart from "./hooks/cart/useAddToCart";
+import { useQueryClient } from "@tanstack/react-query";
+import useRemoveFromCart from "./hooks/cart/useRemoveFromCart";
+import useQuantityModifier from "./hooks/cart/useQuantityModifier";
 
 setAuthToken(getToken());
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState([]);
+  const { data: cartData } = useData("/cart", null, ["cart"], 10_000, !!user);
+  const addToCartMutation = useAddToCart();
+  const removeFromCartMutation = useRemoveFromCart();
+  const increaseQuantityMutation = useQuantityModifier("INCREASE");
+  const decreaseQuantityMutation = useQuantityModifier("DECREASE");
+
+  useEffect(() => {
+    if (cartData) {
+      setCart(cartData);
+    }
+  }, [cartData]);
+
   useEffect(() => {
     try {
       const decodedJwt = getUser();
@@ -37,85 +47,27 @@ const App = () => {
 
   const addToCart = useCallback(
     (product, quantity) => {
-      const updatedCart = [...cart];
-      const productIndex = updatedCart.findIndex(
-        (item) => item.product._id === product._id,
-      );
-      if (productIndex === -1) {
-        updatedCart.push({ product, quantity });
-      } else {
-        updatedCart[productIndex].quantity += quantity;
-      }
-      setCart(updatedCart);
-      addToCartAPI(product._id, quantity)
-        .then((res) => {
-          toast.success("Product added successfully !");
-        })
-        .catch((err) => {
-          console.log(err.response);
-          toast.error("Fail to add product!");
-          setCart(cart);
-        });
+      addToCartMutation.mutate({ id: product._id, quantity, product });
     },
-    [cart],
+    [addToCartMutation],
   );
-
-  const getCart = useCallback(() => {
-    getCartAPI()
-      .then((res) => {
-        setCart(res.data);
-      })
-      .catch((err) => {
-        console.log(err.response);
-        toast.error("Fail to get cart product!");
-      });
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      getCart();
-    }
-  }, [user]);
 
   const removeFromCart = useCallback(
     (id) => {
-      const oldCart = [...cart];
-      const newCart = oldCart.filter((item) => item.product._id !== id);
-      setCart(newCart);
-      removeFromCartAPI(id).catch((err) => {
-        console.log(err.response);
-        toast.error("Fail to remove product from cart ");
-        setCart(oldCart);
-      });
+      removeFromCartMutation.mutate({ id });
     },
-    [cart],
+    [removeFromCartMutation],
   );
 
   const updateCart = (type, id) => {
-    const oldCart = [...cart];
-    const updatedCart = [...cart];
-    const productIndex = updatedCart.findIndex(
-      (item) => item.product._id === id,
-    );
     if (type === "increase") {
-      updatedCart[productIndex].quantity++;
-      increaseProductAPI(id).catch((err) => {
-        console.log(err.response);
-        toast.error("Fail to increase product quantity from cart ");
-        setCart(oldCart);
-      });
+      increaseQuantityMutation.mutate({ id });
     } else if (type === "decrease") {
-      updatedCart[productIndex].quantity--;
-      decreaseProductAPI(id).catch((err) => {
-        console.log(err.response);
-        toast.error("Fail to decrease product quantity from cart ");
-        setCart(oldCart);
-      });
+      decreaseQuantityMutation.mutate({ id });
     } else {
       console.log("Wrong argument for type: ", type);
       return;
     }
-    setCart(updatedCart);
   };
 
   return (

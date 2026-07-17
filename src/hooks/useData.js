@@ -7,6 +7,7 @@ const useData = (
   customConfig = {},
   queryKey,
   staleTime = 300_000,
+  enabled = true,
 ) => {
   const fetchFunction = () =>
     ApiClient.get(endpoint, customConfig).then((resp) => resp.data);
@@ -14,6 +15,7 @@ const useData = (
   return useQuery({
     queryKey: queryKey,
     queryFn: fetchFunction,
+    enabled: enabled,
     retry: 7,
     retryDelay: 3000,
     staleTime: staleTime, //how much time data live in cache

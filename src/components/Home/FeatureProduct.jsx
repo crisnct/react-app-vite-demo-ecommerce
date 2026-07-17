@@ -10,6 +10,7 @@ const FeatureProduct = () => {
     null,
     ["products", "featured"],
     10 * 60 * 60 * 1000,
+    true
   );
   return (
     <section className="feature_products">
