@@ -14,6 +14,7 @@ import CartContext from "../../context/CartContext";
 import { useState } from "react";
 import getSugestionsAPI from "../../services/productServices";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const user = useContext(UserContext);
@@ -65,7 +66,12 @@ const Navbar = () => {
   }, [search]);
 
   return (
-    <nav className="navbar align_center">
+    <motion.nav
+      className="navbar align_center"
+      initial={{ opacity: 1, y: -70 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       <div className="align_center">
         <h1 className="navbar_heading">CartWish</h1>
         <form className="navbar_form align_center" onSubmit={handleSubmit}>
@@ -125,7 +131,7 @@ const Navbar = () => {
           </>
         )}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
