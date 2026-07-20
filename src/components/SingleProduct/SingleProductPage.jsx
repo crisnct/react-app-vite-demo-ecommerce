@@ -29,6 +29,8 @@ const SingleProductPage = () => {
       {!error && (
         <section className="align_center single_product">
           <div className="align_center">
+            <title>{"CartWish-" + data?.title}</title>
+            <meta name="description" content={data?.description} />
             <div className="single_product_thumbnails">
               {data?.images.map((image, index) => (
                 <img

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { use, useContext, useEffect } from "react";
 import "./Navbar.css";
 import LinkWithIcon from "./LinkWithIcon";
 
@@ -18,7 +18,14 @@ import { motion } from "framer-motion";
 
 const Navbar = () => {
   const user = useContext(UserContext);
-  const { cart } = useContext(CartContext);
+  let cartArray = [];
+  if (user) {
+    //Only in react 19 and above use it can be used instead of useContext inside of if conditions
+    //use is an API and not a hook, like useContext
+    const { cart } = use(CartContext);
+    cartArray = cart;
+  }
+
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
@@ -126,7 +133,8 @@ const Navbar = () => {
             <LinkWithIcon title="My Orders" link="myorders" emoji={order} />
             <LinkWithIcon title="LogOut" link="/logout" emoji={lock} />
             <NavLink to="/cart" className="align_center">
-              Cart <p className="align_center cart_counts">{cart.length}</p>
+              Cart{" "}
+              <p className="align_center cart_counts">{cartArray.length}</p>
             </NavLink>
           </>
         )}

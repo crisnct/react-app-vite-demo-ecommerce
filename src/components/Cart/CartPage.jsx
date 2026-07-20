@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect, useState } from "react";
+import React, { memo, use, useContext, useEffect, useState } from "react";
 import "./CartPage.css";
 import remove from "../../assets/remove.png";
 import Table from "../Common/Table";
@@ -11,9 +11,9 @@ import { checkoutAPI } from "../../services/orderServices";
 
 const CartPage = () => {
   const [quantity, setQuantity] = useState(1);
-  const user = useContext(UserContext);
+  const user = use(UserContext);
   const { cart, addToCart, removeFromCart, updateCart, setCart } =
-    useContext(CartContext);
+    use(CartContext);
   const checkout = () => {
     const oldCart = [...cart];
     setCart([]);
