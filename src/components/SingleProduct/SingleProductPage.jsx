@@ -7,6 +7,7 @@ import ApiClient from "../../utils/apiClient";
 import Loader from "../Common/Loader";
 import CartContext from "../../context/CartContext";
 import UserContext from "../../context/UserContext";
+import config from "../../config.json";
 
 const SingleProductPage = () => {
   const { id } = useParams();
@@ -34,7 +35,7 @@ const SingleProductPage = () => {
             <div className="single_product_thumbnails">
               {data?.images.map((image, index) => (
                 <img
-                  src={`${ApiClient.defaults.imagesURL}/${image}`}
+                  src={`${config.backendURL}/products/${image}`}
                   key={index}
                   alt="product.title"
                   onClick={() => setSelectedImage(index)}
@@ -43,7 +44,7 @@ const SingleProductPage = () => {
               ))}
             </div>
             <img
-              src={`${ApiClient.defaults.imagesURL}/${data?.images[selectedImage]}`}
+              src={`${config.backendURL}/products/${data?.images[selectedImage]}`}
               key={selectedImage}
               alt="product.title"
               className="single_product_display"

@@ -8,6 +8,7 @@ import UserContext from "../../context/UserContext";
 import apiClient from "../../utils/apiClient";
 import CartContext from "../../context/CartContext";
 import { checkoutAPI } from "../../services/orderServices";
+import config from "../../config.json";
 
 const CartPage = () => {
   const [quantity, setQuantity] = useState(1);
@@ -41,7 +42,7 @@ const CartPage = () => {
       {/* User profile */}
       <div className="align_center user_info">
         <img
-          src={`${apiClient.defaults.domain}/profile/${user?.profilePic}`}
+          src={`${config.backendURL}/profile/${user?.profilePic}`}
           alt="user profile"
         />
         <div>

@@ -1,8 +1,6 @@
 import axios from "axios";
+import config from "../config.json";
 
 export default axios.create({
-  categoryImageURL: "http://localhost:5000/category",
-  imagesURL: "http://localhost:5000/products",
-  baseURL: "http://localhost:5000/api",
-  domain: "http://localhost:5000",
+  baseURL: `${config.backendURL}/api`,
 });

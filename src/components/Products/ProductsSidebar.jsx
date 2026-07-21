@@ -4,6 +4,7 @@ import LinkWithIcon from "../Navbar/LinkWithIcon";
 import ApiClient from "../../utils/apiClient";
 import useData from "../../hooks/useData";
 import Loader from "../Common/Loader";
+import config from "../../config.json";
 
 const ProductsSidebar = () => {
   const {
@@ -24,7 +25,7 @@ const ProductsSidebar = () => {
               key={category._id}
               title={category.name}
               link={`/products?category=${encodeURIComponent(category.name)}`}
-              emoji={`${ApiClient.defaults.categoryImageURL}/${category.image}`}
+              emoji={`${config.backendURL}/category/${category.image}`}
               sidebar={true}
             />
           ))}
